@@ -1,3 +1,3 @@
-const textColor = '#333333';
+const textColor = "#fafafa";
 
 export { textColor };
