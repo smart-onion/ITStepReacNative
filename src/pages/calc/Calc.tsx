@@ -17,7 +17,7 @@ const square        = 'x²';
 const squaredRoot   = '√x';
 const persent       = '%';
 const maxDigits     = 16;
-
+const shortSpace    = ' ' 
 // memory consts
 const memoryClear   = "MC";
 const memoryRecall  = "MR";
@@ -26,6 +26,7 @@ const memoryMinus   = "M-";
 const memorySet     = "MS";
 
 interface ICalcState {
+
     result: string,                           // вміст основного поля калькулятора - "екрану"
     expression: string,                       // вираз, що формується вище "результату"
     needClearResult: boolean,                 // потреба стерти результат при початку введення (після операцій)                    
@@ -50,6 +51,15 @@ const initialState:ICalcState = {
 export default function Calc() {
     const {width, height} = useWindowDimensions();
     const [calcState, setCalcState] = useState<ICalcState>(initialState);
+
+
+    // useEffect(() => {
+    //     if(calcState.result.length == 5){
+    //         setCalcState({...calcState,
+    //             result: calcState.result.slice(0,2) + shortSpace + calcState.result.slice(2)
+    //         })
+    //     }
+    // }, [calcState.result])
 
     const operationClick = (btn:ICalcButtonData) => {
         const newState:ICalcState = {...calcState,
@@ -121,12 +131,38 @@ export default function Calc() {
         })
     }
 
+    const convertResult = () => {
+
+    }
+
     const persentoperation = () => {
 
         setCalcState({...calcState,
             result: !calcState.prevArgument ? calcState.result
             :   ((calcState.prevArgument / 100) * resToNumber()).toString()
         })
+    }
+    
+    const rec = (res:string):string => {
+        
+        const inner = (s:string):string => {
+            s = s.replace(/\s/g, "");
+            if (s.length <= 3){
+                return s;
+            }
+            return inner(s.slice(0, -3)) + shortSpace + s.slice(-3);
+        }
+
+        let i = res.indexOf(dotSymbol);
+        if (i > 0){
+            let afterDot = res.slice(i);
+            let beforeDot = res.slice(0, i)
+            res = inner(beforeDot) + afterDot
+
+        }else{
+            res = inner(res)
+        }
+        return res;
     }
     const digitClick = (btn:ICalcButtonData) => {
         var res = calcState.result;
@@ -139,11 +175,17 @@ export default function Calc() {
             calcState.needClearExpression = false;
             calcState.expression = "";
         }
-
+       
+        res = rec(res + btn.text)
+        //console.log(res)
         // Обмежити введення 16 (maxDigits) цифрами (саме цифрами, точку та знак (мінус) ігнорувати)
-        if(res.replace(dotSymbol, '').replace(minusSymbol, '').length >= maxDigits) return;
+        if(res.replace(dotSymbol, '').replace(minusSymbol, '').replace(/\s/g, "").length > maxDigits){
+            console.log("max digits exeed") 
+            console.log(res) 
+            return
+        }
 
-        setCalcState({...calcState, result: res + btn.text});
+        setCalcState({...calcState, result: res});
     };
 
     const backspaceClick = (_:ICalcButtonData) => {
@@ -153,6 +195,8 @@ export default function Calc() {
         //     : "0"
         // });
         setCalcState(prevState => {
+            let result = calcState.result.substring(0, calcState.result.length - 1);
+            result = rec(result)
             if(prevState.needClearExpression) {
                 prevState.needClearExpression = false;
                 prevState.expression = "";
@@ -163,7 +207,7 @@ export default function Calc() {
             }
             else {
                 prevState.result = calcState.result.length > 1
-                 ? calcState.result.substring(0, calcState.result.length - 1)
+                 ? result
                  : "0"
             }
             return {...prevState};
@@ -229,8 +273,8 @@ export default function Calc() {
     }
 
     const resToNumber = (): number => {
-        var res = calcState.result.replace(dotSymbol, '.').replace(minusSymbol, '-');
-        return Number(res);
+        var res = calcState.result.replace(dotSymbol, '.').replace(minusSymbol, '-').replace(shortSpace, "");
+        return res.length > 0 ? Number(res) : 0;
     };
 
     const numToResult = (num: number): string => {
