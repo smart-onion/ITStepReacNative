@@ -57,11 +57,17 @@ export default function Swipe() {
             }
             else { // not sure -- diagonal
                 data.eventMessage = "diagonal";
-                if (dx < 0){
-                    data.eventMessage = "secondary diagonal"
+                if (dx < 0 && dy < 0){
+                    data.eventMessage = "Top left"
                 }
-                else if (dx > 0){
-                    data.eventMessage = "main diagonal"
+                else if (dx > 0 && dy > 0 ){
+                    data.eventMessage = "Bottom right"
+                }
+                else if (dx > 0 && dy < 0){
+                    data.eventMessage = "Top right"
+                }
+                else if(dx < 0 && dy > 0){
+                    data.eventMessage = "Bottom left"
                 }
             }
             startEvent = null

@@ -1,7 +1,7 @@
 import { View, Text, Animated, Pressable } from "react-native"
 import AnimStyle from "./css/AnimStyle"
 
-const opacityValue = new Animated.Value(1);
+let opacityValue = new Animated.Value(1);
 
 export default function Anim(){
 
@@ -11,7 +11,7 @@ export default function Anim(){
             useNativeDriver: true,
             duration: 1000,
 
-        })
+        }).start();
     }
     
 
@@ -19,7 +19,9 @@ export default function Anim(){
         <View style={AnimStyle.animRow}>
             <View style={AnimStyle.animItem}>
                 <Pressable onPress={opacityPress}>
-                    <View style={[AnimStyle.animBlock, {opacity: opacityValue}]} />
+                    <Animated.View style={{opacity: opacityValue}}>
+                    <View style={AnimStyle.animBlock} />
+                    </Animated.View>
                 </Pressable>
             </View>
             <View style={AnimStyle.animItem}></View>
