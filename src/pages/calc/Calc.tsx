@@ -7,35 +7,22 @@ import { useState } from "react";
 import CalcOperations from "./model/CalcOperations";
 
 const divZeroMessage = "Cannot divide by zero";
-const dotSymbol     = ',';
-const minusSymbol   = '-';
-const addSymbol     = '+';
-const divSymbol     = '÷';
-const mulSymbol     = '×';
-const subSymbol     = '-';
-const square        = 'x²';
-const squaredRoot   = '√x';
-const persent       = '%';
-const maxDigits     = 16;
-const shortSpace    = ' ' 
-// memory consts
-const memoryClear   = "MC";
-const memoryRecall  = "MR";
-const memoryPlus    = "M+";
-const memoryMinus   = "M-";
-const memorySet     = "MS";
+const dotSymbol = ',';
+const minusSymbol = '-';
+const addSymbol = '+';
+const divSymbol = '÷';
+const mulSymbol = '×';
+const subSymbol = '-';
+const maxDigits = 16;
 
 interface ICalcState {
-
     result: string,                           // вміст основного поля калькулятора - "екрану"
     expression: string,                       // вираз, що формується вище "результату"
     needClearResult: boolean,                 // потреба стерти результат при початку введення (після операцій)                    
     needClearExpression: boolean,             // потреба стерти вираз при початку введення (після операцій)                 
     isError: boolean,                         // чи знаходиться калькулятор в аварійному стані (показ помилки)    
     operation?: CalcOperations | undefined,   // операція, що була натиснена (+/-/*...)
-    prevArgument?: number | undefined,  
-    memory: number,      // аргумент, що був перед натисненням операції
-    isMemoryMode: boolean
+    prevArgument?: number | undefined,        // аргумент, що був перед натисненням операції
 };
 
 const initialState:ICalcState = {
@@ -43,33 +30,22 @@ const initialState:ICalcState = {
     expression: "",
     needClearResult: false,        
     needClearExpression: false,
-    isError: false, 
-    memory: 0  ,
-    isMemoryMode: false,
+    isError: false,    
 };
 
 export default function Calc() {
     const {width, height} = useWindowDimensions();
     const [calcState, setCalcState] = useState<ICalcState>(initialState);
 
-
-    // useEffect(() => {
-    //     if(calcState.result.length == 5){
-    //         setCalcState({...calcState,
-    //             result: calcState.result.slice(0,2) + shortSpace + calcState.result.slice(2)
-    //         })
-    //     }
-    // }, [calcState.result])
-
     const operationClick = (btn:ICalcButtonData) => {
         const newState:ICalcState = {...calcState,
             needClearResult: true,
             needClearExpression: false,
             operation: 
-                btn.text    == divSymbol    ? CalcOperations.div
-                : btn.text  == mulSymbol    ? CalcOperations.mul
-                : btn.text  == addSymbol    ? CalcOperations.add
-                : btn.text  == subSymbol    ? CalcOperations.sub
+                btn.text == divSymbol ? CalcOperations.div
+                : btn.text == mulSymbol ? CalcOperations.mul
+                : btn.text == addSymbol ? CalcOperations.add
+                : btn.text == subSymbol ? CalcOperations.sub
                 : undefined,
         };
         if(calcState.operation) {   // повторне натискання -- є попередня невиконана операція, слід обчислити
@@ -87,10 +63,9 @@ export default function Calc() {
     };
 
     const equalClick = (_:ICalcButtonData) => {
-        let res = resToNumber() < 0 ? ` (${calcState.result})` : calcState.result
         if(calcState.operation) {
             setCalcState({...calcState,
-                expression: calcState.expression + ' ' + res + ' =',
+                expression: calcState.expression + ' ' + calcState.result + ' =',
                 needClearResult: true,
                 needClearExpression: true,
                 prevArgument: undefined,
@@ -102,71 +77,16 @@ export default function Calc() {
 
     const doOperationWithState = ():number => {
         const arg = resToNumber();
-        return  calcState.operation == CalcOperations.div ? calcState.prevArgument! / arg 
-            :   calcState.operation == CalcOperations.mul ? calcState.prevArgument! * arg 
-            :   calcState.operation == CalcOperations.add ? calcState.prevArgument! + arg 
-            :   calcState.operation == CalcOperations.sub ? calcState.prevArgument! - arg 
-            :   Number.NaN
+        return calcState.operation == CalcOperations.div ? calcState.prevArgument! / arg 
+            :  calcState.operation == CalcOperations.mul ? calcState.prevArgument! * arg 
+            :  calcState.operation == CalcOperations.add ? calcState.prevArgument! + arg 
+            :  calcState.operation == CalcOperations.sub ? calcState.prevArgument! - arg 
+            :  Number.NaN
     };
 
-    const sqr = () => {
-        let res = resToNumber() ** 2;
-        setCalcState({...calcState,
-            result: res.toString(),
-            expression: `sqr(${calcState.result})`
-        })
-    }
-
-    const sqrt = () => {
-        if (resToNumber() < 0){
-            setCalcState({...calcState,
-                isError: true,
-                result: "Incorect input"
-            })
-            return;
-        }
-        setCalcState({...calcState,
-            result: Math.sqrt(resToNumber()).toString(),
-            expression: squaredRoot + calcState.result
-        })
-    }
-
-    const convertResult = () => {
-
-    }
-
-    const persentoperation = () => {
-
-        setCalcState({...calcState,
-            result: !calcState.prevArgument ? calcState.result
-            :   ((calcState.prevArgument / 100) * resToNumber()).toString()
-        })
-    }
-    
-    const rec = (res:string):string => {
-        
-        const inner = (s:string):string => {
-            s = s.replace(/\s/g, "");
-            if (s.length <= 3){
-                return s;
-            }
-            return inner(s.slice(0, -3)) + shortSpace + s.slice(-3);
-        }
-
-        let i = res.indexOf(dotSymbol);
-        if (i > 0){
-            let afterDot = res.slice(i);
-            let beforeDot = res.slice(0, i)
-            res = inner(beforeDot) + afterDot
-
-        }else{
-            res = inner(res)
-        }
-        return res;
-    }
     const digitClick = (btn:ICalcButtonData) => {
         var res = calcState.result;
-        if(calcState.needClearResult || calcState.isError || res == '0') {
+        if(res === "0" || calcState.needClearResult || calcState.isError) {
             res = "";
             calcState.needClearResult = false;
             calcState.isError = false;
@@ -175,17 +95,11 @@ export default function Calc() {
             calcState.needClearExpression = false;
             calcState.expression = "";
         }
-       
-        res = rec(res + btn.text)
-        //console.log(res)
-        // Обмежити введення 16 (maxDigits) цифрами (саме цифрами, точку та знак (мінус) ігнорувати)
-        if(res.replace(dotSymbol, '').replace(minusSymbol, '').replace(/\s/g, "").length > maxDigits){
-            console.log("max digits exeed") 
-            console.log(res) 
-            return
-        }
 
-        setCalcState({...calcState, result: res});
+        // Обмежити введення 16 (maxDigits) цифрами (саме цифрами, точку та знак (мінус) ігнорувати)
+        if(res.replace(dotSymbol, '').replace(minusSymbol, '').length >= maxDigits) return;
+
+        setCalcState({...calcState, result: res + btn.text});
     };
 
     const backspaceClick = (_:ICalcButtonData) => {
@@ -195,8 +109,6 @@ export default function Calc() {
         //     : "0"
         // });
         setCalcState(prevState => {
-            let result = calcState.result.substring(0, calcState.result.length - 1);
-            result = rec(result)
             if(prevState.needClearExpression) {
                 prevState.needClearExpression = false;
                 prevState.expression = "";
@@ -207,7 +119,7 @@ export default function Calc() {
             }
             else {
                 prevState.result = calcState.result.length > 1
-                 ? result
+                 ? calcState.result.substring(0, calcState.result.length - 1)
                  : "0"
             }
             return {...prevState};
@@ -266,15 +178,9 @@ export default function Calc() {
         });
     }
 
-    const clearEntry = () => {
-        setCalcState({...calcState,
-            result: "0"
-        })
-    }
-
     const resToNumber = (): number => {
-        var res = calcState.result.replace(dotSymbol, '.').replace(minusSymbol, '-').replace(shortSpace, "");
-        return res.length > 0 ? Number(res) : 0;
+        var res = calcState.result.replace(dotSymbol, '.').replace(minusSymbol, '-');
+        return Number(res);
     };
 
     const numToResult = (num: number): string => {
@@ -286,71 +192,44 @@ export default function Calc() {
         return res;
     }
 
-    const memoryFunc = (btn: ICalcButtonData) => {
-        let m = btn.text
-        
-        setCalcState({...calcState, 
-            memory :        m == memoryClear ? 0 
-                        :   m == memoryPlus ? calcState.memory + resToNumber()
-                        :   m == memoryMinus ? calcState.memory - resToNumber()
-                        :   m == memorySet ? resToNumber()
-                        :   calcState.memory,
-            result :        m == memoryRecall ? numToResult(calcState.memory) : calcState.result,
-            isMemoryMode:   m == memoryClear ? false : true
-        })
-        console.log(calcState)
-    }
-
-    const plusMinus = () => {
-        setCalcState({...calcState,
-            result: resToNumber() != 0 ? (- resToNumber()).toString() : "0"
-        })
-    }
-
     const portraitView = () => <View style={CalcStyle.calc}>
-            <Text style={CalcStyle.calcMemoryResult}>Memory: {calcState.memory}</Text>
-            <Text style={CalcStyle.expression}>{calcState.expression}</Text>
+        <Text style={CalcStyle.expression}>{calcState.expression}</Text>
         <Text style={[CalcStyle.result, {fontSize: (calcState.result.length <= 12 ? 50 : (width - 20) / calcState.result.length * 1.8 )}]}>{calcState.result}</Text>
         <View style={CalcStyle.memoryRow}>
-            <CalcButton data={{text: memoryClear, buttonType: calcState.isMemoryMode ? CalcButtonType.memory : CalcButtonType.disabled, action: memoryFunc}} />
-            <CalcButton data={{text: memoryRecall, buttonType: calcState.isMemoryMode ? CalcButtonType.memory : CalcButtonType.disabled,action: memoryFunc}} />
-            <CalcButton data={{text: memoryPlus, buttonType: CalcButtonType.memory,action: memoryFunc}} />
-            <CalcButton data={{text: memoryMinus, buttonType: CalcButtonType.memory,action: memoryFunc}} />
-            <CalcButton data={{text: memorySet, buttonType: CalcButtonType.memory,action: memoryFunc}} />
-
+            <Text style={CalcStyle.memoryButton}>MC</Text>
         </View>
         <View style={CalcStyle.buttonRow}>
-            <CalcButton data={{text:persent,  buttonType: calcState.isError ? CalcButtonType.disabled : CalcButtonType.operation, action: persentoperation }}/>
-            <CalcButton data={{text:"CE", buttonType: CalcButtonType.operation, action: clearEntry}}/>
+            <CalcButton data={{text:"％",  buttonType: CalcButtonType.operation, action: (btn:ICalcButtonData) => console.log(btn.text)}}/>
+            <CalcButton data={{text:"CE", buttonType: CalcButtonType.operation}}/>
             <CalcButton data={{text:"C",  buttonType: CalcButtonType.operation, action: clearClick }}/>
-            <CalcButton data={{text:"⌫", buttonType: calcState.isError ? CalcButtonType.disabled : CalcButtonType.operation, action: backspaceClick}}/>
+            <CalcButton data={{text:"⌫", buttonType: CalcButtonType.operation, action: backspaceClick}}/>
         </View>
         <View style={CalcStyle.buttonRow}>
             <CalcButton data={{text:"1/x", buttonType: calcState.isError ? CalcButtonType.disabled : CalcButtonType.operation, action: inverseClick}}/>
-            <CalcButton data={{text:square,  buttonType: calcState.isError ? CalcButtonType.disabled : CalcButtonType.operation, action: sqr}}/>
-            <CalcButton data={{text:squaredRoot,  buttonType: calcState.isError ? CalcButtonType.disabled : CalcButtonType.operation, action: sqrt}}/>
+            <CalcButton data={{text:"x2",  buttonType: calcState.isError ? CalcButtonType.disabled : CalcButtonType.operation}}/>
+            <CalcButton data={{text:"Vx",  buttonType: calcState.isError ? CalcButtonType.disabled : CalcButtonType.operation}}/>
             <CalcButton data={{text:divSymbol,   buttonType: calcState.isError ? CalcButtonType.disabled : CalcButtonType.operation, action: operationClick}}/>
         </View>
         <View style={CalcStyle.buttonRow}>
             <CalcButton data={{text:"7", buttonType: CalcButtonType.digit, action: digitClick }}/>
             <CalcButton data={{text:"8", buttonType: CalcButtonType.digit, action: digitClick }}/>
             <CalcButton data={{text:"9", buttonType: CalcButtonType.digit, action: digitClick }}/>
-            <CalcButton data={{text:mulSymbol, buttonType: calcState.isError ? CalcButtonType.disabled : CalcButtonType.operation, action: operationClick}}/>
+            <CalcButton data={{text:mulSymbol, buttonType: CalcButtonType.operation, action: operationClick}}/>
         </View>
         <View style={CalcStyle.buttonRow}>
             <CalcButton data={{text:"4", buttonType: CalcButtonType.digit, action: digitClick }}/>
             <CalcButton data={{text:"5", buttonType: CalcButtonType.digit, action: digitClick }}/>
             <CalcButton data={{text:"6", buttonType: CalcButtonType.digit, action: digitClick }}/>
-            <CalcButton data={{text:subSymbol, buttonType: calcState.isError ? CalcButtonType.disabled : CalcButtonType.operation, action: operationClick}}/>
+            <CalcButton data={{text:subSymbol, buttonType: CalcButtonType.operation, action: operationClick}}/>
         </View>
         <View style={CalcStyle.buttonRow}>
             <CalcButton data={{text:"1", buttonType: CalcButtonType.digit, action: digitClick }}/>
             <CalcButton data={{text:"2", buttonType: CalcButtonType.digit, action: digitClick }}/>
             <CalcButton data={{text:"3", buttonType: CalcButtonType.digit, action: digitClick }}/>
-            <CalcButton data={{text:addSymbol, buttonType: calcState.isError ? CalcButtonType.disabled : CalcButtonType.operation, action: operationClick}}/>
+            <CalcButton data={{text:addSymbol, buttonType: CalcButtonType.operation, action: operationClick}}/>
         </View>
         <View style={CalcStyle.buttonRow}>
-            <CalcButton data={{text:"+/-", buttonType: calcState.isError ? CalcButtonType.disabled : CalcButtonType.operation, action: plusMinus    }}/>
+            <CalcButton data={{text:"+/-", buttonType: CalcButtonType.digit    }}/>
             <CalcButton data={{text:"0", buttonType: CalcButtonType.digit, action: digitClick }}/>
             <CalcButton data={{text:dotSymbol, buttonType: CalcButtonType.digit, action: dotClick }}/>
             <CalcButton data={{text:"=", buttonType: CalcButtonType.equal, action: equalClick }}/>
@@ -359,58 +238,48 @@ export default function Calc() {
 
     const landscapeView = () => <View style={CalcStyle.calc}>
         <View style={CalcStyle.containerResExpMem}>
-                <Text style={CalcStyle.calcMemoryResult}>Memory: {calcState.memory}</Text>
-    <Text style={CalcStyle.expression}>{calcState.expression}</Text>
-                
-                
-                        
-            </View>
-            <Text style={[
-                        CalcStyle.result, 
-                        {fontSize: (calcState.result.length <= 12 ? 40 : (width - 20) / calcState.result.length * 1.0 )}]}>{calcState.result}
-                </Text>  
             <View style={CalcStyle.containerExpMem}>
-                    <View style={CalcStyle.memoryRow}>
-                        <CalcButton data={{text: memoryClear, buttonType: calcState.isMemoryMode ? CalcButtonType.memory : CalcButtonType.disabled, action: memoryFunc}} />
-                        <CalcButton data={{text: memoryRecall, buttonType: calcState.isMemoryMode ? CalcButtonType.memory : CalcButtonType.disabled,action: memoryFunc}} />
-                        <CalcButton data={{text: memoryPlus, buttonType: CalcButtonType.memory,action: memoryFunc}} />
-                        <CalcButton data={{text: memoryMinus, buttonType: CalcButtonType.memory,action: memoryFunc}} />
-                        <CalcButton data={{text: memorySet, buttonType: CalcButtonType.memory,action: memoryFunc}} />
+                <Text style={CalcStyle.expression}>{calcState.expression}</Text>
+                <View style={CalcStyle.memoryRow}>
+                    <Text style={CalcStyle.memoryButton}>MC</Text>
+                </View>
+            </View>            
+            <Text style={[
+                CalcStyle.result, 
+                {fontSize: (calcState.result.length <= 12 ? 50 : (width - 20) / calcState.result.length * 1.8 )}]}>{calcState.result}</Text>
+        </View>
 
-                    </View>
-               
-                </View>  
         <View style={CalcStyle.buttonRow}>
-            <CalcButton data={{text:persent,  buttonType: calcState.isError ? CalcButtonType.disabled : CalcButtonType.operation, action: persentoperation }}/>
-            <CalcButton data={{text:divSymbol, buttonType: calcState.isError ? CalcButtonType.disabled : CalcButtonType.operation, action: operationClick}}/>
+            <CalcButton data={{text:"％",  buttonType: CalcButtonType.operation, action: (btn:ICalcButtonData) => console.log(btn.text)}}/>
+            <CalcButton data={{text:"÷", buttonType: CalcButtonType.operation}}/>
             <CalcButton data={{text:"7", buttonType: CalcButtonType.digit, action: digitClick }}/>
             <CalcButton data={{text:"8", buttonType: CalcButtonType.digit, action: digitClick }}/>
             <CalcButton data={{text:"9", buttonType: CalcButtonType.digit, action: digitClick }}/>
-            <CalcButton data={{text:"C",  buttonType: CalcButtonType.operation, action: clearClick}}/>
+            <CalcButton data={{text:"C",  buttonType: CalcButtonType.operation}}/>
         </View>
         <View style={CalcStyle.buttonRow}>
-            <CalcButton data={{text:"1/x", buttonType: calcState.isError ? CalcButtonType.disabled : CalcButtonType.operation, action: inverseClick}}/>
-            <CalcButton data={{text:mulSymbol, buttonType: calcState.isError ? CalcButtonType.disabled : CalcButtonType.operation, action: operationClick}}/>
+            <CalcButton data={{text:"1/x", buttonType: CalcButtonType.operation}}/>
+            <CalcButton data={{text:"×", buttonType: CalcButtonType.operation}}/>
             <CalcButton data={{text:"4", buttonType: CalcButtonType.digit, action: digitClick }}/>
             <CalcButton data={{text:"5", buttonType: CalcButtonType.digit, action: digitClick }}/>
             <CalcButton data={{text:"6", buttonType: CalcButtonType.digit, action: digitClick }}/>
-            <CalcButton data={{text:"CE", buttonType: CalcButtonType.operation, action: clearEntry}}/>
+            <CalcButton data={{text:"CE", buttonType: CalcButtonType.operation}}/>
         </View>
         <View style={CalcStyle.buttonRow}>
-            <CalcButton data={{text:square, buttonType: calcState.isError ? CalcButtonType.disabled : CalcButtonType.operation, action: sqr}}/>
-            <CalcButton data={{text:minusSymbol, buttonType: calcState.isError ? CalcButtonType.disabled : CalcButtonType.operation, action: operationClick}}/>
+            <CalcButton data={{text:"x2", buttonType: CalcButtonType.operation}}/>
+            <CalcButton data={{text:"-", buttonType: CalcButtonType.operation}}/>
             <CalcButton data={{text:"1", buttonType: CalcButtonType.digit, action: digitClick }}/>
             <CalcButton data={{text:"2", buttonType: CalcButtonType.digit, action: digitClick }}/>
             <CalcButton data={{text:"3", buttonType: CalcButtonType.digit, action: digitClick }}/>
-            <CalcButton data={{text:"⌫", buttonType: calcState.isError ? CalcButtonType.disabled : CalcButtonType.operation, action: backspaceClick}}/>
+            <CalcButton data={{text:"⌫", buttonType: CalcButtonType.operation, action: backspaceClick}}/>
         </View>
         <View style={CalcStyle.buttonRow}>
-            <CalcButton data={{text:squaredRoot, buttonType: calcState.isError ? CalcButtonType.disabled : CalcButtonType.operation, action: sqrt}}/>
-            <CalcButton data={{text:addSymbol, buttonType: calcState.isError ? CalcButtonType.disabled : CalcButtonType.operation, action: operationClick}}/>
-            <CalcButton data={{text:"+/-", buttonType: calcState.isError ? CalcButtonType.disabled : CalcButtonType.operation  , action: plusMinus  }}/>
+            <CalcButton data={{text:"Vx", buttonType: CalcButtonType.operation}}/>
+            <CalcButton data={{text:"+", buttonType: CalcButtonType.operation}}/>
+            <CalcButton data={{text:"+/-", buttonType: CalcButtonType.digit    }}/>
             <CalcButton data={{text:"0", buttonType: CalcButtonType.digit, action: digitClick }}/>
-            <CalcButton data={{text:dotSymbol, buttonType: CalcButtonType.digit, action: dotClick    }}/>
-            <CalcButton data={{text:"=", buttonType: CalcButtonType.equal , action: equalClick   }}/>
+            <CalcButton data={{text:",", buttonType: CalcButtonType.digit, action: dotClick    }}/>
+            <CalcButton data={{text:"=", buttonType: CalcButtonType.equal    }}/>
         </View>
     </View>;        
         

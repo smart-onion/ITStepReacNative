@@ -4,7 +4,7 @@ import ICalcButtonData from "./ICalcButtonData";
 import CalcButtonType from "./CalcButtonType";
 
 export default function CalcButton({data}:{data:ICalcButtonData}) {
-    return <TouchableOpacity disabled={data.buttonType == CalcButtonType.disabled}
+    return <TouchableOpacity 
         onPress={() => { 
             if(data.action && data.buttonType != CalcButtonType.disabled) {
                 data.action(data);
@@ -15,10 +15,9 @@ export default function CalcButton({data}:{data:ICalcButtonData}) {
             ( data.buttonType == CalcButtonType.digit ? styles.digitButton
             : data.buttonType == CalcButtonType.operation ? styles.operButton
             : data.buttonType == CalcButtonType.disabled ? styles.disabledButton
-            : data.buttonType == CalcButtonType.memory ? styles.memoryButton
             : styles.equalButton
             )]}>
-        <Text style={data.buttonType != CalcButtonType.disabled ? styles.calcButtonText : styles.disabledButtonText}>{data.text}</Text>
+        <Text style={styles.calcButtonText}>{data.text}</Text>
     </TouchableOpacity>;
 }
 
@@ -48,13 +47,6 @@ const styles = StyleSheet.create({
 
     },    
     disabledButton: {
-        backgroundColor: "#212121",
-    },
-    disabledButtonText: {
-        color: textColor + "75",
-        fontSize: 18,
-    },
-    memoryButton: {
-
+        backgroundColor: "#282828",
     },
 });

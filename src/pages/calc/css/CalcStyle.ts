@@ -39,20 +39,16 @@ const CalcStyle = StyleSheet.create({
    },
    // Landscape
    containerResExpMem: {
-      flex: 1,
-      display: "flex",
-      flexDirection: "row",
-      justifyContent: "space-around",
-   },
-   containerExpMem: {
       flex: 2,
       display: "flex",
       flexDirection: "row",
       justifyContent: "space-between",
    },
-   calcMemoryResult:{
-      color: textColor,
-      fontSize: 18
+   containerExpMem: {
+      flex: 2,
+      display: "flex",
+      flexDirection: "column",
+      justifyContent: "space-between",
    }
 });
 

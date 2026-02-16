@@ -15,8 +15,8 @@ const HomeStyle = StyleSheet.create({
         width: 50,
         height: 50,
         tintColor: textColor,
-        marginLeft: 10,
-        marginRight: 30,
+        marginLeft: 10.0,
+        marginRight: 15.0,
     },
     menuItem: {
         display: "flex",

@@ -2,14 +2,14 @@ import { StyleSheet } from "react-native";
 import { textColor } from "../../../features/values/colors";
 
 const SwipeStyle = StyleSheet.create({
-    swipeConteiner: {
+    swipeContainer: {
         flex: 1,
         display: "flex",
         // flexDirection: "column",
         justifyContent: "space-around",
         alignItems: "center",
     },
-    swipeTitel: {
+    swipeTitle: {
         color: textColor,
     },
     swipeField: {

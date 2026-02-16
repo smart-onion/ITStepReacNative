@@ -8,13 +8,22 @@ import Swipe from "../../pages/swipe/Swipe";
 import IRouteInformation from "../../features/interfaces/IRouteInformation";
 import AppContext from "../../features/context/AppContext";
 import Anim from "../../pages/anim/Anim";
-
+import IUser from "../../features/interfaces/IUser";
+import Auth from "../../pages/auth/Auth";
+import Rates from "../../pages/rates/Rates";
+import '../../shared/extensions/DateExtensions';
+import '../../shared/extensions/NumberExtensions';
+import ModalView from "./ModalView";
+import IModalData from "../../features/interfaces/modal/IModalData";
+import Alerts from "../../pages/alerts/Alerts";
 
 
 export default function App() {
+    const {width, height} = useWindowDimensions();
     const [history, setHistory] = useState<Array<IRouteInformation>>([]);
     const [page, setPage] = useState<IRouteInformation>({slug: "home"});
-    const {width, height} = useWindowDimensions();
+    const [user, setUser] = useState<IUser|null>(null);
+    const [modalData, setModalData] = useState<IModalData|null>(null);
 
     const navigate = (route:IRouteInformation) => {
         console.log(history);
@@ -46,6 +55,10 @@ export default function App() {
         return () => { listener.remove(); };
     }, []);
 
+    const showModal = (data:IModalData) => {
+        setModalData(data);
+    };
+
     return <SafeAreaProvider>
         <SafeAreaView edges={['top', 'bottom']} style={AppStyle.container}>
 
@@ -60,12 +73,15 @@ export default function App() {
                 </View>
             }            
 
-            <AppContext.Provider value={{navigate}}>
+            <AppContext.Provider value={{navigate, user, setUser, showModal,}}>
                 <View style={AppStyle.main}>
-                    { page.slug == 'anim'  ? <Anim />
-                    : page.slug == 'calc'  ? <Calc />
-                    : page.slug == 'home'  ? <Home />
-                    : page.slug == 'swipe' ? <Swipe />
+                    { user == null || page.slug == 'auth' ? <Auth />
+                    : page.slug == 'alerts' ? <Alerts />
+                    : page.slug == 'anim'   ? <Anim   />
+                    : page.slug == 'calc'   ? <Calc   />
+                    : page.slug == 'home'   ? <Home   />
+                    : page.slug == 'rates'  ? <Rates  />
+                    : page.slug == 'swipe'  ? <Swipe  />
                     : <Text>404</Text>
                     }                
                 </View>
@@ -88,9 +104,27 @@ export default function App() {
                             source={require("../../features/assets/img/calc.png")}
                             style={{width: 28, height: 28, tintColor: "#ddd", marginTop: 16}} />
                     </TouchableOpacity>
+
+                     <TouchableOpacity 
+                        style={{width: 48, height: 48}}
+                        onPress={() => navigate({slug: "rates"})}>
+                        <Image 
+                            source={require("../../features/assets/img/rate.png")}
+                            style={{width: 28, height: 28, tintColor: "#ddd", marginTop: 16}} />
+                    </TouchableOpacity>
+
+                    <TouchableOpacity 
+                        style={{width: 48, height: 48}}
+                        onPress={() => navigate({slug: "auth"})}>
+                        <Image 
+                            source={require("../../features/assets/img/auth.png")}
+                            style={{width: 28, height: 28, tintColor: "#ddd", marginTop: 16}} />
+                    </TouchableOpacity>
                 </View>
             }
-            
+
+            <ModalView modalData={modalData} setModalData={setModalData} />
+
         </SafeAreaView>
     </SafeAreaProvider>;
 }
