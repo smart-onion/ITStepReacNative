@@ -15,9 +15,16 @@ const AuthStyle = StyleSheet.create({
         marginHorizontal: 30.0,
         marginVertical: 7.0,
     },
+    userDetails:{
+        display: "flex",
+        flexDirection: "column",
+        justifyContent: "center",
+        alignItems: "center",
+        marginHorizontal: 20,
+        
+    },
     authRowText: {
         color: textColor,
-        flex: 1,
     },
     authRowInput: {
         borderWidth: 1.0,

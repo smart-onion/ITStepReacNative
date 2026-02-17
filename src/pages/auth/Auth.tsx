@@ -20,6 +20,9 @@ export default function Auth() {
             setUser({
                 name: 'User',
                 token: '123',
+                email: "user@local.lan",
+                phone: "+380637891653",
+                currency: "UAH"
             });
         }
     };
@@ -30,8 +33,11 @@ export default function Auth() {
 
     return !!user 
     ? <View style={AuthStyle.authContainer}>
-        <View style={AuthStyle.authRow}>
+        <View style={AuthStyle.userDetails}>
             <Text style={AuthStyle.authRowText}>Вітання, {user.name}</Text>
+            <Text style={AuthStyle.authRowText}>Email: {user.email}</Text>
+            <Text style={AuthStyle.authRowText}>Phone number: {user.phone}</Text>
+            {user.currency && <Text style={AuthStyle.authRowText}>Your currency: {user.currency}</Text>}
             <TouchableOpacity style={AuthStyle.authButton} onPress={signOutClick}>
                 <Text style={[AuthStyle.authButtonText, {color: textColor}]}>Вихід</Text>
             </TouchableOpacity>
