@@ -51,7 +51,6 @@ export default function Rates() {
             <View style={RatesStyle.pageTitle}>
                 <Text style={RatesStyle.pageTitleText}>Курси валют НБУ</Text>
             </View>
-            
             <View style={RatesStyle.titleDate}>
                 <TouchableOpacity onPress={showDatePicker}>
                     <Text style={RatesStyle.titleDateText}>{date.toDotted()}</Text>

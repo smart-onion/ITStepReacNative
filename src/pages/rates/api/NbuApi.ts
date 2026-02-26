@@ -15,11 +15,11 @@ export default class NbuApi {
 
     static getRatesForDate(date: Date): Promise<Array<INbuRate>> {
         return new Promise((resolve, reject) => {
-            const dd = date.getDate().pad2();
-            const mm = (date.getMonth() + 1).pad2();
-            const yyyy = date.getFullYear();
-            const param = `${yyyy}${mm}${dd}`;
-            fetch(`https://bank.gov.ua/NBUStatService/v1/statdirectory/exchange?date=${param}&json`)
+            // const dd = date.getDate().pad2();
+            // const mm = (date.getMonth() + 1).pad2();
+            // const yyyy = date.getFullYear();
+            // const param = `${yyyy}${mm}${dd}`;
+            fetch(`https://bank.gov.ua/NBUStatService/v1/statdirectory/exchange?date=${date.toApiDate()}&json`)
             .then(r => r.json())
             .then(j => {
                 resolve(j);
