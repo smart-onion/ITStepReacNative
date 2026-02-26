@@ -1,6 +1,7 @@
 import { useContext } from "react";
 import { Pressable, StyleSheet, Text } from "react-native";
 import AppContext from "../../features/context/AppContext";
+import { ButtonTypes } from "../../features/ui/button/FirmButton";
 
 export default function Alerts() {
     const {showModal} = useContext(AppContext);
@@ -14,11 +15,26 @@ export default function Alerts() {
             buttons: [
                 {
                     title: "Yes",
-                    action: () => {}
+                    action: () => {},
+                    buttonType: ButtonTypes.success
                 },
                 {
                     title: "No",
-                    action: () => {}
+                    action: () => {},
+                    buttonType: ButtonTypes.danger
+                },
+                {
+                    title: "Info",
+                    action: () => {},
+                    buttonType: ButtonTypes.primary
+                },{
+                    title: "Info",
+                    action: () => {},
+                    buttonType: ButtonTypes.primary
+                },{
+                    title: "Info",
+                    action: () => {},
+                    buttonType: ButtonTypes.primary
                 },
             ]
           })}>

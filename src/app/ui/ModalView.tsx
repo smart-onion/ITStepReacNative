@@ -25,7 +25,7 @@ export default function ModalView({modalData, setModalData}:{
                 <Text style={styles.modalTitle}>{modalData?.title}</Text>
                 <Text style={styles.modalText}>{modalData?.message}</Text>
                 {modalData && (modalData.buttons?.length ?? 0) > 0 &&
-                    <View style={styles.buttonsRow}>
+                    <View style={modalData.buttons && modalData.buttons.length <= 3 ? styles.buttonsRow : styles.buttonMany} >
                         {modalData.buttons!.map((b,i) => 
                             <FirmButton key={i} buttonType={b.buttonType} title={b.title} />)}
                         
@@ -46,15 +46,24 @@ const styles = StyleSheet.create({
   },
   buttonsRow: {
     display: "flex",
+    flexWrap: "wrap",
     flexDirection: "row",
     justifyContent: "space-between",
-    gap: 5.0,
+    gap: 7,
+   
+  },
+  buttonMany: {
+     gap: 7.0,
+    flex: 1,
+    flexWrap: 'wrap',
+    maxHeight: 150,
+    alignItems: "stretch",
   },
   modalView: {
     margin: 20,
     backgroundColor: '#373737',
     borderRadius: 7,
-    padding: 15,
+    padding: 25,
     alignItems: 'center',
     shadowColor: '#000',
     shadowOffset: {
@@ -65,11 +74,11 @@ const styles = StyleSheet.create({
     shadowRadius: 4,
     elevation: 5,
   },
-  button: {
-    borderRadius: 20,
-    padding: 10,
-    elevation: 2,
-  }, 
+  // button: {
+  //   borderRadius: 20,
+  //   padding: 10,
+  //   elevation: 2,
+  // }, 
   buttonClose: {
     position: "absolute",
     right: 10.0,
@@ -77,7 +86,7 @@ const styles = StyleSheet.create({
   },
   buttonCloseText: {
     color: "maroon",
-    fontSize: 28.0,
+    fontSize: 30.0,
     fontWeight: 700,
   },
   modalTitle: {

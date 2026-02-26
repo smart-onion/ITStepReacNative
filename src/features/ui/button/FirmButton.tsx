@@ -36,19 +36,22 @@ const styles = StyleSheet.create({
         borderRadius: 7.0,
         borderWidth: 1.0,
         padding: 5.0,
+        paddingVertical: 10,
+        paddingHorizontal: 15,
+        width: "auto"
     },
     primary: {
-        backgroundColor: "#333",
-        borderColor: "#222"
+        backgroundColor: "#414db6",
+        borderColor: "#00384e"
     },
     success: {
-        backgroundColor: "#353",
-        borderColor: "#242"
-
+        backgroundColor: "rgb(24, 150, 24)",
+        borderColor: "rgb(60, 131, 1)",
     },
     danger: {
-        backgroundColor: "#533",
-        borderColor: "#422"
+        backgroundColor: "rgb(209, 29, 29)",
+        borderColor: "rgb(114, 0, 25)",
+        
 
     }
 });
